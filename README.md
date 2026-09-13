@@ -277,6 +277,8 @@ it sits in the band where hiss and cymbals actually live.
 
 ## Known limits
 
+### This build
+
 - **Minimum range is 15 in**, and that number is measured rather than assumed.
   The speaker's ring after the chirp runs 100% of the direct path at its peak,
   is still 8% at 9 in, and only falls below 2% past 18 in. **REF** subtraction
@@ -289,6 +291,43 @@ it sits in the band where hiss and cymbals actually live.
 - **The chirp is audible** in wide mode — a short tick. `n` switches to a
   14–19 kHz sweep most adults cannot hear, at the cost of a peak about four
   times broader.
+
+### Limitations of sonar indoors
+
+Separate from the limits of this build — these are properties of the technique,
+and no amount of firmware fixes them.
+
+- **Low resolution.** At 4–18 kHz the wavelengths run 86 mm down to 19 mm,
+  radiated by a speaker about 30 mm across, so the beam is broad and the board
+  effectively insonifies the whole room at once. With a single microphone there
+  is **no bearing information at all**: the profile is the entire room projected
+  onto one axis, and two surfaces at the same range in different directions
+  merge into a single peak. Edges, corners and small objects do not resolve.
+  What comes back is "something at this distance", never "something over
+  there". Bearing needs a second microphone and an arrival-time difference.
+  [[1]](https://forums.raspberrypi.com/viewtopic.php?t=60825)
+  [[2]](https://www.cs.cmu.edu/~motionplanning/papers/sbp_papers/integrated4/chong_indoor_sonar_array.pdf)
+
+- **Multi-path reflections.** Hard flat indoor surfaces let the chirp bounce
+  more than once, so peaks appear at ranges where nothing exists, and the
+  instrument cannot tell a real surface from a second-order echo.
+
+  This room's own data is a decent illustration. The three persistent returns
+  sat at 4′9.6″, 6′3.7″ and 9′8.6″ — and twice 4′9.6″ is 9′7.2″, within about
+  an inch and a half of that third peak. So the 9′8″ return may well be the
+  4′9.6″ surface heard a second time rather than a wall.
+
+  **That is a hypothesis, not a finding.** The test is to move the board a foot
+  and watch which peaks move: a genuine reflector tracks the board 1:1, a
+  double bounce tracks it 2:1.
+  [[1]](https://forums.raspberrypi.com/viewtopic.php?t=60825)
+
+- **Air and temperature variance.** `SOUND_IN_S` is set for 68 °F, and sound
+  moves about 1.1 in/s per °F. A room 20 °F off nominal shifts a 6 ft reading
+  by roughly a quarter inch. That is below this rig's noise — but it is a
+  *drift*, not a random error, so averaging does not remove it, and it is the
+  first correction to make if the readings ever need to be trusted more finely
+  than that. Humidity matters far less across normal indoor conditions.
 
 Bench protocol for validating a build: [TESTING.md](TESTING.md).
 
